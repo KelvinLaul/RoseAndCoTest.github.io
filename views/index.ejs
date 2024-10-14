@@ -73,45 +73,41 @@
         <img src="/images/FacialExfoliation.jpg" class="img-fluid" alt="Facial Exfoliation">
     </section>
 
-   
-
-   
-   <!-- Contact Section -->
-   <section id="contact" class="my-5 text-center">
-    <h2>Contact Us</h2>
-    <form id="contact-form" class="container">
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label for="firstName">First Name</label>
-                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required>
+    <!-- Contact Section -->
+    <section id="contact" class="my-5 text-center">
+        <h2>Contact Us</h2>
+        <form id="contact-form" class="container">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="firstName">First Name</label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required>
+                </div>
             </div>
-            <div class="form-group col-md-6">
-                <label for="lastName">Last Name</label>
-                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="phone">Phone</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone">
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+            <div class="form-group">
+                <label for="companyName">Company Name</label>
+                <input type="text" class="form-control" id="companyName" name="companyName" placeholder="Company Name">
             </div>
-            <div class="form-group col-md-6">
-                <label for="phone">Phone</label>
-                <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone">
+            <div class="form-group">
+                <label for="position">Position</label>
+                <input type="text" class="form-control" id="position" name="position" placeholder="Position">
             </div>
-        </div>
-        <div class="form-group">
-            <label for="companyName">Company Name</label>
-            <input type="text" class="form-control" id="companyName" name="companyName" placeholder="Company Name">
-        </div>
-        <div class="form-group">
-            <label for="position">Position</label>
-            <input type="text" class="form-control" id="position" name="position" placeholder="Position">
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-</section>
-
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </section>
 
     <!-- Footer -->
     <footer class="footer mt-auto py-3">
@@ -136,48 +132,55 @@
     
             <!-- Book Now Button -->
             <div class="mt-3">
-                <a href="https://www.fresha.com/book-now/testing1-enlr2gci/all-offer?pId=1363057" class="btn btn-primary" style="padding: 10px 20px; font-size: 16px;" target="_blank">
+                <a href="https://www.fresha.com/book-now/rosey-co-f1rg2re3/services?lid=1447704&oiid=sv%3A19292995&pId=1374890" class="btn btn-primary" style="padding: 10px 20px; font-size: 16px;" target="_blank">
                     Book Now
                 </a>
             </div>
         </div>
     </footer>
-    
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="/js/main.js"></script>
-    
-    <!-- EmailJS Script -->
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() {
-            emailjs.init('<%= emailjs_user_id %>'); // Initialize with the passed user ID
-        })();
 
+    <!-- JavaScript for form submission to backend -->
+    <script>
         document.getElementById('contact-form').addEventListener('submit', function(event) {
             event.preventDefault();
 
+            // Collect form data
             const formData = {
-                to_name: 'Rosey Co', // Replace with the actual recipient's name if needed
-                from_name: document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value,
-                message: `Email: ${document.getElementById('email').value}\n
-                          Phone: ${document.getElementById('phone').value}\n
-                          Company: ${document.getElementById('companyName').value}\n
-                          Position: ${document.getElementById('position').value}`
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                companyName: document.getElementById('companyName').value,
+                position: document.getElementById('position').value
             };
 
-            emailjs.send('<%= emailjs_service_id %>', '<%= emailjs_template_id %>', formData)
-                .then((result) => {
-                    console.log('Email successfully sent!', result.text);
+            // Send the form data to the backend using fetch
+            fetch('/submit-form', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
                     alert('Email sent successfully!');
-                }, (error) => {
-                    console.log('Failed to send email:', error.text);
-                    alert('Failed to send email. Please try again later.');
-                });
+                } else {
+                    alert('Failed to send email. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
         });
     </script>
+
 </body>
 </html>
